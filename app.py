@@ -47,7 +47,7 @@ def webhook():
                     message_text = messaging_event["message"][
                         "text"]  # the message's text
 
-                    if (messaging_event["message"]["attachment"]["type"] === "image") {
+                    if (messaging_event.get('message', {}).get('attachment').get("type", None) == "image") {
                         print("YESSSSSSS")
                     }
 
