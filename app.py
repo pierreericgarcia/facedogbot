@@ -45,7 +45,7 @@ def webhook():
 
                     img_url = messaging_event["message"]["attachments"][0]["payload"]["url"]
  
-                    img_data = requests.get(img_url).raw
+                    img_data = requests.get(img_url, stream=True).raw
 
                     files = {'image_data': img_data}
 
