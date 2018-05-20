@@ -42,16 +42,16 @@ def webhook():
 
                     sender_id = messaging_event["sender"][
                         "id"]  # the facebook ID of the person sending you the message
- 
-                    img_data = requests.get(messaging_event["message"]["attachments"][0]["payload"]["url"])
-                    r = requests.post(
-                        "https://dry-headland-79809.herokuapp.com/predict",
-                        data={ 'image_data': img_data }
-                    )
-                    
-                    print(r.text)
 
-                    send_message(sender_id, "roger that!")
+                    img_url = messaging_event["message"]["attachments"][0]["payload"]["url"]
+ 
+                    img_data = requests.get(img_url).raw
+
+                    files = {'image_data': img_data}
+
+                    post_image = requests.post("https://dry-headland-79809.herokuapp.com/predict", files=files)
+
+                    send_message(sender_id, post_image.json()['breed'])
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
