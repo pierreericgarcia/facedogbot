@@ -45,6 +45,10 @@ def webhook():
 
                     print(messaging_event["message"])
                     print(messaging_event["message"]["attachments"][0]["payload"]["url"])
+                    r = requests.post(
+                        "https://dry-headland-79809.herokuapp.com/predict",
+                        data={ 'url': messaging_event["message"]["attachments"][0]["payload"]["url"] })
+                    print(r.text)
 
                     send_message(sender_id, "roger that!")
 
