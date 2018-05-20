@@ -42,12 +42,13 @@ def webhook():
 
                     sender_id = messaging_event["sender"][
                         "id"]  # the facebook ID of the person sending you the message
-
-                    print(messaging_event["message"])
-                    print(messaging_event["message"]["attachments"][0]["payload"]["url"])
+ 
+                    img_data = requests.get(messaging_event["message"]["attachments"][0]["payload"]["url"]).content
                     r = requests.post(
                         "https://dry-headland-79809.herokuapp.com/predict",
-                        data={ 'url': messaging_event["message"]["attachments"][0]["payload"]["url"] })
+                        data={ 'image_data': img_data }
+                    )
+                    
                     print(r.text)
 
                     send_message(sender_id, "roger that!")
