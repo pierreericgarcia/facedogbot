@@ -49,7 +49,7 @@ def webhook():
 
                     files = {'image_data': img_data}
 
-                    post_image = requests.post("https://dry-headland-79809.herokuapp.com/predict", files=files)
+                    post_image = requests.post("https://dog-app-project.appspot.com/predict", files=files)
 
                     send_message(sender_id, post_image.json()['breed'])
 
