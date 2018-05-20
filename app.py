@@ -44,6 +44,7 @@ def webhook():
                         "id"]  # the facebook ID of the person sending you the message
                     
                     print(messaging_event["message"])
+                    print(messaging_event["message"]["attachment"]["payload"])
 
                     send_message(sender_id, "roger that!")
 
