@@ -72,7 +72,7 @@ def webhook():
                             pronoun = "an" if formatted_breed[
                                 0].lower() in vowels else "a"
 
-                            returned_message = "I know! You look like {} {}.".format(
+                            returned_message = "I know! He looks like {} {}.".format(
                                 pronoun, formatted_breed)
                             send_message(sender_id, returned_message)
                             send_image(sender_id, returned_img_path)
@@ -98,6 +98,7 @@ def webhook():
                             "Sorry, I can not read text, please send me a picture of your dog or your friend. (Maybe it's the same person)"
                         )
                         return "ok", 200
+                    pass
 
                 if messaging_event.get("delivery"):
                     pass
@@ -106,7 +107,10 @@ def webhook():
                     pass
 
                 if messaging_event.get("postback"):
-                    print(messaging_event.get("postback"))
+                    if messaging_event.get("postback", {}).get("payload") == '<postback_payload>':
+                        sender_id = messaging_event["sender"]["id"]
+                        send_message(sender_id, "Hi my is Facedog and I can detect dog breeds just by looking at a picture. Send me one ! :)")
+                        return "ok", 200
                     pass
 
     return "ok", 200
