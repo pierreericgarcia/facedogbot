@@ -175,9 +175,9 @@ def send_attachment(recipient_id,
                     img_path,
                     notification_type=NotificationType.regular):
     payload = {
-        'recipient': {{
+        'recipient': json.dumps({
             'id': recipient_id
-        }},
+        }),
         'notification_type': notification_type,
         'message': {{
             'attachment': {
