@@ -16,6 +16,7 @@ app = Flask(__name__)
 vowels = ["a", "e", "i", "o", "u", "y"]
 
 
+
 @app.route('/', methods=['GET'])
 def verify():
     # when the endpoint is registered as a webhook, it must echo back
@@ -133,31 +134,31 @@ def send_message(recipient_id, message_text):
 
 
 def send_attachment(recipient_id, img_path):
-    jpgfile = Image.open(img_path)
-    payload = {
-        'recipient': json.dumps({
-            'id': recipient_id
-        }),
-        'message': json.dumps({
-            'attachment': {
-                'type': "image",
-                'payload': {}
-            }
-        }),
-        'filedata': (os.path.basename(img_path), jpgfile)
-    }
-    multipart_data = MultipartEncoder(payload)
-    multipart_header = {'Content-Type': multipart_data.content_type}
-    params = {"access_token": os.environ["PAGE_ACCESS_TOKEN"]}
-    r = requests.post(
-        "https://graph.facebook.com/v2.6/me/messages",
-        data=multipart_data,
-        params=params,
-        headers=multipart_header)
-    log(r.json())
-    if r.status_code != 200:
-        log(r.status_code)
-        #log(r.text)
+    with open(img_path, "rb") as imageFile:
+        payload = {
+            'recipient': json.dumps({
+                'id': recipient_id
+            }),
+            'message': json.dumps({
+                'attachment': {
+                    'type': "image",
+                    'payload': {}
+                }
+            }),
+            'filedata': (os.path.basename(img_path), imageFile.read())
+        }
+        multipart_data = MultipartEncoder(payload)
+        multipart_header = {'Content-Type': multipart_data.content_type}
+        params = {"access_token": os.environ["PAGE_ACCESS_TOKEN"]}
+        r = requests.post(
+            "https://graph.facebook.com/v2.6/me/messages",
+            data=multipart_data,
+            params=params,
+            headers=multipart_header)
+        log(r.json())
+        if r.status_code != 200:
+            log(r.status_code)
+            #log(r.text)
 
 
 def log(msg, *args,
