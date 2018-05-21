@@ -16,7 +16,6 @@ app = Flask(__name__)
 vowels = ["a", "e", "i", "o", "u", "y"]
 
 
-
 @app.route('/', methods=['GET'])
 def verify():
     # when the endpoint is registered as a webhook, it must echo back
@@ -136,16 +135,18 @@ def send_message(recipient_id, message_text):
 def send_attachment(recipient_id, img_path):
     with open(img_path, "rb") as imageFile:
         payload = {
-            'recipient': json.dumps({
+            'recipient':
+            json.dumps({
                 'id': recipient_id
             }),
-            'message': json.dumps({
+            'message':
+            json.dumps({
                 'attachment': {
                     'type': "image",
                     'payload': {}
                 }
             }),
-            'filedata': (os.path.basename(img_path), imageFile.read())
+            'filedata': ('image/jpg', open(img_path, 'rb')),
         }
         multipart_data = MultipartEncoder(payload)
         multipart_header = {'Content-Type': multipart_data.content_type}
