@@ -2,11 +2,16 @@ import os
 import sys
 import json
 from datetime import datetime
+import glob
+from random import randint
 
 import requests
+from requests_toolbelt import MultipartEncoder
 from flask import Flask, request
 
 app = Flask(__name__)
+
+vowels = ["a", "e", "i", "o", "u", "y"]
 
 
 @app.route('/', methods=['GET'])
@@ -51,9 +56,23 @@ def webhook():
                         if post_image.status_code == 200:
                             response = post_image.json()
                             breed = response.get('breed')
-                            returned_message = "I know! You look like a {}.".format(
-                                breed)
+
+                            imgs_path = glob.glob(
+                                "dog_breed_images/*{}/{}*".format(
+                                    breed, breed))
+
+                            returned_img_path = imgs_path[randint(
+                                0, (len(imgs_path) - 1))]
+
+                            formatted_breed = breed.replace("_", " ")
+                            pronoun = "an" if formatted_breed[
+                                0].lower() in vowels else "a"
+
+                            returned_message = "I know! You look like {} {}.".format(
+                                pronoun, formatted_breed)
                             send_message(sender_id, returned_message)
+                            send_image(sender_id, returned_img_path)
+
                             return "ok", 200
                         else:
                             send_message(
@@ -65,7 +84,7 @@ def webhook():
                     elif len(message.get("attachments", [])) > 1:
                         send_message(
                             sender_id,
-                            "Sorry, I can not analyze more than one image at a time."
+                            "Sorry, I can not analyze more than one image at a time. Please send me back only one image !"
                         )
                         return "ok", 200
                     else:
@@ -88,7 +107,6 @@ def webhook():
 
 
 def send_message(recipient_id, message_text):
-
     log("sending message to {recipient}: {text}".format(
         recipient=recipient_id, text=message_text))
 
@@ -110,6 +128,40 @@ def send_message(recipient_id, message_text):
     if r.status_code != 200:
         log(r.status_code)
         log(r.text)
+
+
+def send_image(recipient_id, img_path):
+    with open(img_path, 'rb') as f:
+        attachment_filename = os.path.basename(img_path)
+        attachment_ext = attachment_filename.split('.')[1]
+        content_type = 'image/' + attachment_ext  # eg: audio/mp3
+        payload = {
+            'recipient':
+            json.dumps({
+                'id': recipient_id
+            }),
+            'notification_type':
+            "REGULAR",
+            'message':
+            json.dumps({
+                'attachment': {
+                    'type': "image",
+                    'payload': {}
+                }
+            }),
+            'filedata': (attachment_filename, f, content_type)
+        }
+        multipart_data = MultipartEncoder(payload)
+        multipart_header = {'Content-Type': multipart_data.content_type}
+        params = {"access_token": os.environ["PAGE_ACCESS_TOKEN"]}
+        r = requests.post(
+            "https://graph.facebook.com/v2.6/me/messages",
+            data=multipart_data,
+            params=params,
+            headers=multipart_header)
+        if r.status_code != 200:
+            log(r.status_code)
+            log(r.text)
 
 
 def log(msg, *args,
