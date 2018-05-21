@@ -65,9 +65,6 @@ def webhook():
 
                             returned_img_path = imgs_path[randint(
                                 0, (len(imgs_path) - 1))]
-                            
-                            import os.path
-                            print(os.path.isfile(returned_img_path))
 
                             formatted_breed = breed.replace("_", " ")
                             pronoun = "an" if formatted_breed[
@@ -76,7 +73,7 @@ def webhook():
                             returned_message = "I know! You look like {} {}.".format(
                                 pronoun, formatted_breed)
                             send_message(sender_id, returned_message)
-                            # send_attachment(sender_id, returned_img_path)
+                            send_attachment(sender_id, returned_img_path)
 
                             return "ok", 200
                         else:
@@ -135,40 +132,6 @@ def send_message(recipient_id, message_text):
         log(r.text)
 
 
-def send_image(recipient_id, img_path):
-    with open(img_path, 'rb') as image:
-        attachment_filename = os.path.basename(img_path)
-        attachment_ext = attachment_filename.split('.')[1]
-        content_type = 'image/' + attachment_ext
-        payload = {
-            'recipient':
-            json.dumps({
-                'id': recipient_id
-            }),
-            'notification_type':
-            "REGULAR",
-            'message':
-            json.dumps({
-                'attachment': {
-                    'type': "image",
-                    'payload': {}
-                }
-            }),
-            'filedata': (attachment_filename, image, content_type)
-        }
-        multipart_data = MultipartEncoder(payload)
-        multipart_header = {'Content-Type': multipart_data.content_type}
-        params = {"access_token": os.environ["PAGE_ACCESS_TOKEN"]}
-        r = requests.post(
-            "https://graph.facebook.com/v2.6/me/messages",
-            data=multipart_data,
-            params=params,
-            headers=multipart_header)
-        if r.status_code != 200:
-            log(r.status_code)
-            log(r.text)
-
-
 def send_attachment(recipient_id, img_path):
     payload = {
         'recipient': json.dumps({
@@ -190,9 +153,10 @@ def send_attachment(recipient_id, img_path):
         data=multipart_data,
         params=params,
         headers=multipart_header)
+    log(r.json())
     if r.status_code != 200:
         log(r.status_code)
-        log(r.text)
+        #log(r.text)
 
 
 def log(msg, *args,
