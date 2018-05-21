@@ -51,14 +51,14 @@ def webhook():
                         if post_image.status_code == 200:
                             response = post_image.json()
                             breed = response.get('breed')
-                            returned_message = "I know 😀! You look like a {}.".format(
+                            returned_message = "I know! You look like a {}.".format(
                                 breed)
                             send_message(sender_id, returned_message)
                             return "ok", 200
                         else:
                             send_message(
                                 sender_id,
-                                "Sorry I've encountered an error 😢. Please try again later !"
+                                "Sorry I've encountered an error. Please try again later !"
                             )
                             return "ok", 200
 
@@ -71,7 +71,7 @@ def webhook():
                     else:
                         send_message(
                             sender_id,
-                            "Sorry, I can not read text, please send me a picture of your dog or your friend. (Maybe it's the same person 🤔)"
+                            "Sorry, I can not read text, please send me a picture of your dog or your friend. (Maybe it's the same person)"
                         )
                         return "ok", 200
 
