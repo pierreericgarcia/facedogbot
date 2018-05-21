@@ -74,7 +74,7 @@ def webhook():
 
                             returned_message = "I know! You look like {} {}.".format(
                                 pronoun, formatted_breed)
-                            #send_message(sender_id, returned_message)
+                            send_message(sender_id, returned_message)
                             #image(sender_id, returned_img_path)
 
                             return "ok", 200
@@ -134,34 +134,36 @@ def send_message(recipient_id, message_text):
         log(r.text)
 
 
-def image(recipient_id, img_path):
-    with open(img_path, "rb") as imageFile:
-        payload = {
-            'recipient':
-            json.dumps({
-                'id': recipient_id
-            }),
-            'message':
-            json.dumps({
-                'attachment': {
-                    'type': "image",
-                    'payload': {}
+def send_image(recipient_id, img_path):
+    img_url = "https://s3.eu-west-3.amazonaws.com/dogbreedimages/{}".format(
+        img_path)
+
+    params = {"access_token": os.environ["PAGE_ACCESS_TOKEN"]}
+    headers = {"Content-Type": "application/json"}
+    data = json.dumps({
+        'recipient': {
+            'id': recipient_id
+        },
+        'message': {
+            'attachment': {
+                'type': "image",
+                'payload': {
+                    'url': img_url
                 }
-            }),
-            'filedata': ('image/jpg', imageFile),
+            }
         }
-        multipart_data = MultipartEncoder(payload)
-        multipart_header = {'Content-Type': multipart_data.content_type}
-        params = {"access_token": os.environ["PAGE_ACCESS_TOKEN"]}
-        r = requests.post(
-            "https://graph.facebook.com/v2.6/me/messages",
-            data=multipart_data,
-            params=params,
-            headers=multipart_header)
-        log(r.json())
-        if r.status_code != 200:
-            log(r.status_code)
-            #log(r.text)
+    })
+
+    r = requests.post(
+        "https://graph.facebook.com/v2.6/me/messages",
+        data=data,
+        params=params,
+        headers=headers)
+    log(r.json())
+
+    if r.status_code != 200:
+        log(r.status_code)
+        #log(r.text)
 
 
 def log(msg, *args,
