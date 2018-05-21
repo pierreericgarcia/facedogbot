@@ -5,6 +5,7 @@ from datetime import datetime
 import glob
 from random import randint
 from enum import Enum
+from PIL import Image
 
 import requests
 from requests_toolbelt import MultipartEncoder
@@ -13,7 +14,6 @@ from flask import Flask, request
 app = Flask(__name__)
 
 vowels = ["a", "e", "i", "o", "u", "y"]
-
 
 
 @app.route('/', methods=['GET'])
@@ -133,6 +133,7 @@ def send_message(recipient_id, message_text):
 
 
 def send_attachment(recipient_id, img_path):
+    jpgfile = Image.open(img_path)
     payload = {
         'recipient': json.dumps({
             'id': recipient_id
@@ -143,7 +144,7 @@ def send_attachment(recipient_id, img_path):
                 'payload': {}
             }
         }),
-        'filedata': (os.path.basename(img_path), open(img_path, 'rb'))
+        'filedata': (os.path.basename(img_path), jpgfile)
     }
     multipart_data = MultipartEncoder(payload)
     multipart_header = {'Content-Type': multipart_data.content_type}
