@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 import glob
 from random import randint
+from enum import Enum
 
 import requests
 from requests_toolbelt import MultipartEncoder
@@ -12,6 +13,12 @@ from flask import Flask, request
 app = Flask(__name__)
 
 vowels = ["a", "e", "i", "o", "u", "y"]
+
+
+class NotificationType(Enum):
+    regular = "REGULAR"
+    silent_push = "SILENT_PUSH"
+    no_push = "NO_PUSH"
 
 
 @app.route('/', methods=['GET'])
@@ -64,9 +71,6 @@ def webhook():
                             returned_img_path = imgs_path[randint(
                                 0, (len(imgs_path) - 1))]
 
-                            returned_img_path_full = os.path.abspath(returned_img_path)
-                            log(returned_img_path_full)
-
                             formatted_breed = breed.replace("_", " ")
                             pronoun = "an" if formatted_breed[
                                 0].lower() in vowels else "a"
@@ -74,7 +78,7 @@ def webhook():
                             returned_message = "I know! You look like {} {}.".format(
                                 pronoun, formatted_breed)
                             send_message(sender_id, returned_message)
-                            send_image(sender_id, returned_img_path)
+                            send_attachment(sender_id, returned_img_path)
 
                             return "ok", 200
                         else:
@@ -134,7 +138,7 @@ def send_message(recipient_id, message_text):
 
 
 def send_image(recipient_id, img_path):
-    with open(img_path, 'rb') as f:
+    with open(img_path, 'rb') as image:
         attachment_filename = os.path.basename(img_path)
         attachment_ext = attachment_filename.split('.')[1]
         content_type = 'image/' + attachment_ext
@@ -152,7 +156,7 @@ def send_image(recipient_id, img_path):
                     'payload': {}
                 }
             }),
-            'filedata': (attachment_filename, f, content_type)
+            'filedata': (attachment_filename, image, content_type)
         }
         multipart_data = MultipartEncoder(payload)
         multipart_header = {'Content-Type': multipart_data.content_type}
@@ -164,6 +168,36 @@ def send_image(recipient_id, img_path):
             headers=multipart_header)
         if r.status_code != 200:
             log(r.status_code)
+            log(r.text)
+
+
+def send_attachment(recipient_id,
+                    img_path,
+                    notification_type=NotificationType.regular):
+    payload = {
+        'recipient': {{
+            'id': recipient_id
+        }},
+        'notification_type': notification_type,
+        'message': {{
+            'attachment': {
+                'type': "image",
+                'payload': {}
+            }
+        }},
+        'filedata': (os.path.basename(img_path), open(img_path, 'rb'))
+    }
+    multipart_data = MultipartEncoder(payload)
+    multipart_header = {'Content-Type': multipart_data.content_type}
+    params = {"access_token": os.environ["PAGE_ACCESS_TOKEN"]}
+    r = requests.post(
+        "https://graph.facebook.com/v2.6/me/messages",
+        data=multipart_data,
+        params=params,
+        headers=multipart_header)
+    if r.status_code != 200:
+        log(r.status_code)
+        log(r.text)
 
 
 def log(msg, *args,
