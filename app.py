@@ -76,12 +76,13 @@ def webhook():
                                 pronoun, formatted_breed)
                             send_message(sender_id, returned_message)
                             send_image(sender_id, returned_img_path)
+                            send_message(sender_id, "Send me another photo! :)")
 
                             return "ok", 200
                         else:
                             send_message(
                                 sender_id,
-                                "Sorry I've encountered an error. Please try again later !"
+                                "Sorry I've encountered an error :(. Please try again later !"
                             )
                             return "ok", 200
 
@@ -105,6 +106,7 @@ def webhook():
                     pass
 
                 if messaging_event.get("postback"):
+                    print(messaging_event.get("postback"))
                     pass
 
     return "ok", 200
