@@ -65,6 +65,9 @@ def webhook():
 
                             returned_img_path = imgs_path[randint(
                                 0, (len(imgs_path) - 1))]
+                            
+                            import os.path
+                            print(os.path.isfile(returned_img_path))
 
                             formatted_breed = breed.replace("_", " ")
                             pronoun = "an" if formatted_breed[
@@ -73,7 +76,7 @@ def webhook():
                             returned_message = "I know! You look like {} {}.".format(
                                 pronoun, formatted_breed)
                             send_message(sender_id, returned_message)
-                            send_attachment(sender_id, returned_img_path)
+                            # send_attachment(sender_id, returned_img_path)
 
                             return "ok", 200
                         else:
