@@ -179,12 +179,12 @@ def send_attachment(recipient_id,
             'id': recipient_id
         }),
         'notification_type': notification_type,
-        'message': {{
+        'message': json.dumps({
             'attachment': {
                 'type': "image",
                 'payload': {}
             }
-        }},
+        }),
         'filedata': (os.path.basename(img_path), open(img_path, 'rb'))
     }
     multipart_data = MultipartEncoder(payload)
