@@ -40,7 +40,7 @@ def webhook():
                     message = messaging_event.get("message")
                     sender_id = messaging_event["sender"]["id"]
 
-                    if len(message.get("attachments")) == 1:
+                    if len(message.get("attachments"), []) == 1:
                         img_url = message["attachments"][0]["payload"]["url"]
                         img_data = requests.get(img_url, stream=True).raw
                         files = {'image_data': img_data}
@@ -62,7 +62,7 @@ def webhook():
                             )
                             return "ok", 200
 
-                    elif len(message.get("attachments")) > 1:
+                    elif len(message.get("attachments"), []) > 1:
                         send_message(
                             sender_id,
                             "Sorry, I can not analyze more than one image at a time."
