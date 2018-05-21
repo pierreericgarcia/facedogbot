@@ -29,9 +29,7 @@ def webhook():
     # endpoint for processing incoming messaging events
 
     data = request.get_json()
-    log(
-        data
-    )  # you may not want to log every incoming message in production, but it's good for testing
+    log(data)
 
     if data["object"] == "page":
 
@@ -39,29 +37,51 @@ def webhook():
             for messaging_event in entry["messaging"]:
 
                 if messaging_event.get("message"):  # someone sent us a message
+                    message = messaging_event.get("message")
+                    sender_id = messaging_event["sender"]["id"]
 
-                    sender_id = messaging_event["sender"][
-                        "id"]  # the facebook ID of the person sending you the message
+                    if len(message.get("attachments")) == 1:
+                        img_url = message["attachments"][0]["payload"]["url"]
+                        img_data = requests.get(img_url, stream=True).raw
+                        files = {'image_data': img_data}
+                        post_image = requests.post(
+                            "https://dog-app-project.appspot.com/predict",
+                            files=files)
 
-                    img_url = messaging_event["message"]["attachments"][0]["payload"]["url"]
- 
-                    img_data = requests.get(img_url, stream=True).raw
+                        if post_image.status_code == 200:
+                            response = post_image.json()
+                            breed = response.get('breed')
+                            returned_message = "I know 😀! You look like a {}.".format(
+                                breed)
+                            send_message(sender_id, returned_message)
+                            return "ok", 200
+                        else:
+                            send_message(
+                                sender_id,
+                                "Sorry I've encountered an error 😢. Please try again later !"
+                            )
+                            return "ok", 200
 
-                    files = {'image_data': img_data}
+                    elif len(message.get("attachments")) > 1:
+                        send_message(
+                            sender_id,
+                            "Sorry, I can not analyze more than one image at a time."
+                        )
+                        return "ok", 200
+                    else:
+                        send_message(
+                            sender_id,
+                            "Sorry, I can not read text, please send me a picture of your dog or your friend. (Maybe it's the same person 🤔)"
+                        )
+                        return "ok", 200
 
-                    post_image = requests.post("https://dog-app-project.appspot.com/predict", files=files)
-
-                    send_message(sender_id, post_image.json()['breed'])
-
-                if messaging_event.get("delivery"):  # delivery confirmation
+                if messaging_event.get("delivery"):
                     pass
 
-                if messaging_event.get("optin"):  # optin confirmation
+                if messaging_event.get("optin"):
                     pass
 
-                if messaging_event.get(
-                        "postback"
-                ):  # user clicked/tapped "postback" button in earlier message
+                if messaging_event.get("postback"):
                     pass
 
     return "ok", 200
