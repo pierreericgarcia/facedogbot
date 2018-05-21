@@ -75,7 +75,7 @@ def webhook():
                             returned_message = "I know! You look like {} {}.".format(
                                 pronoun, formatted_breed)
                             send_message(sender_id, returned_message)
-                            #image(sender_id, returned_img_path)
+                            send_image(sender_id, returned_img_path)
 
                             return "ok", 200
                         else:
