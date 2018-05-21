@@ -15,11 +15,6 @@ app = Flask(__name__)
 vowels = ["a", "e", "i", "o", "u", "y"]
 
 
-class NotificationType(Enum):
-    regular = "REGULAR"
-    silent_push = "SILENT_PUSH"
-    no_push = "NO_PUSH"
-
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -171,14 +166,11 @@ def send_image(recipient_id, img_path):
             log(r.text)
 
 
-def send_attachment(recipient_id,
-                    img_path,
-                    notification_type=NotificationType.regular):
+def send_attachment(recipient_id, img_path):
     payload = {
         'recipient': json.dumps({
             'id': recipient_id
         }),
-        'notification_type': notification_type,
         'message': json.dumps({
             'attachment': {
                 'type': "image",
