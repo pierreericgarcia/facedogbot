@@ -66,14 +66,16 @@ def webhook():
                             returned_img_path = imgs_path[randint(
                                 0, (len(imgs_path) - 1))]
 
+                            print(returned_img_path)
+
                             formatted_breed = breed.replace("_", " ")
                             pronoun = "an" if formatted_breed[
                                 0].lower() in vowels else "a"
 
                             returned_message = "I know! You look like {} {}.".format(
                                 pronoun, formatted_breed)
-                            send_message(sender_id, returned_message)
-                            send_attachment(sender_id, returned_img_path)
+                            #send_message(sender_id, returned_message)
+                            #image(sender_id, returned_img_path)
 
                             return "ok", 200
                         else:
@@ -132,7 +134,7 @@ def send_message(recipient_id, message_text):
         log(r.text)
 
 
-def send_attachment(recipient_id, img_path):
+def image(recipient_id, img_path):
     with open(img_path, "rb") as imageFile:
         payload = {
             'recipient':
@@ -146,7 +148,7 @@ def send_attachment(recipient_id, img_path):
                     'payload': {}
                 }
             }),
-            'filedata': ('image/jpg', open(img_path, 'rb')),
+            'filedata': ('image/jpg', imageFile),
         }
         multipart_data = MultipartEncoder(payload)
         multipart_header = {'Content-Type': multipart_data.content_type}
