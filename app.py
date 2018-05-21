@@ -64,6 +64,9 @@ def webhook():
                             returned_img_path = imgs_path[randint(
                                 0, (len(imgs_path) - 1))]
 
+                            returned_img_path_full = os.path.abspath(returned_img_path)
+                            log(returned_img_path_full)
+
                             formatted_breed = breed.replace("_", " ")
                             pronoun = "an" if formatted_breed[
                                 0].lower() in vowels else "a"
@@ -134,7 +137,7 @@ def send_image(recipient_id, img_path):
     with open(img_path, 'rb') as f:
         attachment_filename = os.path.basename(img_path)
         attachment_ext = attachment_filename.split('.')[1]
-        content_type = 'image/' + attachment_ext  # eg: audio/mp3
+        content_type = 'image/' + attachment_ext
         payload = {
             'recipient':
             json.dumps({
@@ -161,7 +164,6 @@ def send_image(recipient_id, img_path):
             headers=multipart_header)
         if r.status_code != 200:
             log(r.status_code)
-            log(r.text)
 
 
 def log(msg, *args,
