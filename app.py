@@ -107,6 +107,7 @@ def webhook():
                     pass
 
                 if messaging_event.get("postback"):
+                    # Welcome message
                     if messaging_event.get("postback", {}).get("payload") == '<postback_payload>':
                         sender_id = messaging_event["sender"]["id"]
                         send_message(sender_id, "Hi my is Facedog and I can detect dog breeds just by looking at a picture. Send me one ! :)")
