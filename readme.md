@@ -1,16 +1,46 @@
-# Facebook Messenger Bot
-This is a simple python template that uses Flask to build a webhook for Facebook's Messenger Bot API.
+<h1 align="center">
+<br>
+<a href="https://www.facebook.com/facedogbot"><img src="https://image.ibb.co/ibzeGT/facedogbotlogo.png" alt="Facedog" width="150"></a>
+<br>
+  <br>
+  Facedog 🐶
+  <br>
+</h1>
 
-Read more in my [tutorial that uses this repository](https://blog.hartleybrody.com/fb-messenger-bot/).
+<h4 align="center">The first messenger bot breed detector.</h4>
 
-*New:* [Check out my Facebook Messenger Bot Course](https://facebook-messenger-bot.teachable.com/p/facebook-messenger-bot/). It walks you through the process of getting this bot hosted on heroku step-by-step, and also unlocks all the content that's hidden in this repo's branches.
+<br>
 
-## "Callback verification failed"
+![screenshot](https://image.ibb.co/b29X38/couv.png)
 
-![Facebook Error](https://cloud.githubusercontent.com/assets/18402893/21538944/f96fcd1e-cdc7-11e6-83ee-a866190d9080.png)
+## Key Features
 
-The #1 error that gets reported in issues is that facebook returns an error message (like above) when trying to add the heroku endpoint to your facebook chat application.
+* Receive & analyze dog pictures
+* Send back the breed of the dog on the picture
+* Send back a photo of the detected breed
 
-Our flask application intentionally returns a 403 Forbidden error if the token that facebook sends doesn't match the token you set using the heroku configuration variables.
 
-If you're getting this error, it likely means that you didn't set your heroku config values properly. Run `heroku config` from the command line within your application and verify that there's a key called `VERIFY_TOKEN` that has been set, and that it's set to the same value as what you've typed into the window on facebook.
+## How To Use
+
+To clone and run this application, you'll need [Git](https://git-scm.com) and [Python](https://www.python.org/) installed on your computer. From your command line:
+
+```bash
+# Clone this repository
+$ git clone git@github.com:pierreericgarcia/facedogbot.git
+
+# Go into the repository
+$ cd facedogbot
+
+# Install dependencies
+$ pip install -r requirements.txt
+
+# Run the app
+$ gunicorn app:app
+```
+
+---
+
+> GitHub [@pierreericgarcia](https://github.com/pierreericgarcia) &nbsp;&middot;&nbsp;
+> Facebook [Pierre-Eric Garcia](https://www.facebook.com/pierreeric.garcia.1) &nbsp;&middot;&nbsp;
+> LinkedIn [Pierre-Eric Garcia](https://www.linkedin.com/in/pierre-eric-garcia) &nbsp;&middot;&nbsp;
+> Twitter [@pierrericgarcia](https://twitter.com/pierrericgarcia)
